@@ -1,48 +1,150 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+# n8n-nodes-claudecode
 
-# n8n-nodes-starter
+This is an n8n community node. It lets you use Claude Code in your n8n workflows.
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](https://n8n.io). It includes the node linter and other dependencies.
+Claude Code is an AI-powered coding assistant that can write, edit, and analyze code, execute commands, and work with files through the Claude Code SDK and Model Context Protocol (MCP) servers.
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
-If you would like your node to be available on n8n cloud you can also [submit your node for verification](https://docs.n8n.io/integrations/creating-nodes/deploy/submit-community-nodes/).
+[Installation](#installation)  
+[Operations](#operations)  
+[Credentials](#credentials)  
+[Compatibility](#compatibility)  
+[Usage](#usage)  
+[Resources](#resources)  
+[Version history](#version-history)
 
-## Prerequisites
+## Installation
 
-You need the following installed on your development machine:
+### Prerequisites
 
-* [git](https://git-scm.com/downloads)
-* Node.js and npm. Minimum version Node 20. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-  ```
-  npm install n8n -g
-  ```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+**Important**: This node requires Claude Code to be installed and authenticated on the n8n server:
 
-## Using this starter
+```bash
+# Install Claude Code globally
+npm install -g @anthropic-ai/claude-code
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+# Authenticate Claude Code (requires active subscription)
+claude-code auth login
+```
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-   ```
-   git clone https://github.com/<your organization>/<your-repo-name>.git
-   ```
-3. Run `npm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `npm run lint` to check for errors or `npm run lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+The Claude Code CLI must be accessible to the n8n process. If using Docker, you'll need to ensure Claude Code is installed and authenticated within the container.
 
-## More information
+### Installing the n8n Community Node
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-## License
+**Using the n8n UI:**
+1. Go to **Settings** > **Community Nodes**
+2. Click **Install a community node**
+3. Enter `@holtweb/n8n-nodes-claudecode`
+4. Click **Install**
 
-[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)
+**Manual installation:**
+```bash
+cd ~/.n8n/nodes
+npm install @holtweb/n8n-nodes-claudecode
+# Restart n8n
+```
+
+**Docker installation:**
+```bash
+docker run -it --rm \
+  -p 5678:5678 \
+  -e N8N_COMMUNITY_NODE_PACKAGES=@holtweb/n8n-nodes-claudecode \
+  -v ~/.n8n:/home/node/.n8n \
+  n8nio/n8n
+```
+
+## Operations
+
+- **Query**: Start a new conversation with Claude Code
+- **Continue**: Continue a previous conversation (requires prior query)
+
+## Credentials
+
+This node uses the Claude Code SDK authentication from your system. No credentials need to be configured within n8n itself.
+
+**Prerequisites:**
+1. Active Claude subscription (Pro or Team)
+2. Claude Code CLI installed globally: `npm install -g @anthropic-ai/claude-code`
+3. Authenticated via: `claude-code auth login`
+
+The authentication is handled by the Claude Code SDK using your system's credentials.
+
+## Compatibility
+
+- **n8n version**: 1.0.0 or later
+- **Node.js**: 20.15 or later
+- **Claude Code SDK**: Latest version
+
+Tested with:
+- n8n: 1.0.0+
+- Node.js: 20.x, 22.x
+
+## Usage
+
+### Basic Workflow
+
+1. Add the **Claude Code** node to your workflow
+2. Select **Query** operation
+3. Enter your prompt (e.g., "Do some research on MCP servers")
+4. Configure the model (Claude 4 Sonnet or Claude 4 Opus)
+5. Select which tools Claude can use + configure MCP
+6. Execute the node
+
+### Configuration Options
+
+**Main Parameters:**
+- **Operation**: Query or Continue
+- **Prompt**: Your instruction or question for Claude
+- **Model**: Choose between Claude 4 Sonnet (faster & default) or Claude 4 Opus (more capable)
+- **Max Turns**: Maximum conversation turns (default: 5)
+- **Timeout**: Operation timeout in seconds (default: 300)
+- **Output Format**: 
+  - Structured: Complete response with messages, summary, metrics
+  - Messages: Raw array of all messages
+  - Text: Final result only
+
+**Available Tools:**
+- **Bash**: Execute bash commands
+- **Edit/MultiEdit**: Edit files
+- **Read/Write**: File operations
+- **Glob/Grep/LS**: File searching
+- **Task**: Launch agents for complex searches
+- **Web Fetch/Search**: Web operations
+- **Notebook Read/Edit**: Jupyter notebook support
+- **Todo Write**: Task management
+
+### MCP Server Configuration
+
+Model Context Protocol servers extend Claude's capabilities:
+
+1. Click **Add MCP Server**
+2. Configure:
+   - **Server Name**: Unique identifier (e.g., "filesystem")
+   - **Command**: Command to run (e.g., "npx")
+   - **Arguments**: Server arguments (e.g., "-y @modelcontextprotocol/server-filesystem /path")
+   - **Environment Variables**: Required env vars (KEY=value format)
+   - **Allowed Tools**: Specific tools or "*" for all
+
+Example MCP servers:
+- `@modelcontextprotocol/server-filesystem` - File system access
+- `@modelcontextprotocol/server-github` - GitHub integration
+- `@modelcontextprotocol/server-slack` - Slack integration
+
+## Resources
+
+* [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
+* [Claude Code documentation](https://docs.anthropic.com/claude-code)
+* [Model Context Protocol](https://modelcontextprotocol.io)
+* [GitHub repository](https://github.com/holt-web-ai/n8n-nodes-claudecode)
+
+## Version history
+
+### 0.1.0 (Initial Release)
+- Basic Claude Code SDK integration
+- Support for Query and Continue operations
+- MCP server configuration
+- Multiple output formats
+- Tool selection and control
