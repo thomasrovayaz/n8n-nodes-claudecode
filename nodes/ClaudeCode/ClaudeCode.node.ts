@@ -63,12 +63,12 @@ export class ClaudeCode implements INodeType {
 				type: 'options',
 				options: [
 					{
-						name: 'Claude 3.5 Sonnet',
+						name: 'Sonnet',
 						value: 'sonnet',
 						description: 'Fast and efficient model for most tasks',
 					},
 					{
-						name: 'Claude 3 Opus',
+						name: 'Opus',
 						value: 'opus',
 						description: 'Most capable model for complex tasks',
 					},
@@ -80,7 +80,7 @@ export class ClaudeCode implements INodeType {
 				displayName: 'Max Turns',
 				name: 'maxTurns',
 				type: 'number',
-				default: 5,
+				default: 10,
 				description: 'Maximum number of conversation turns (back-and-forth exchanges) allowed',
 			},
 			{
@@ -153,23 +153,16 @@ export class ClaudeCode implements INodeType {
 					{
 						name: 'server',
 						displayName: 'MCP Server',
+						// eslint-disable-next-line n8n-nodes-base/node-param-fixed-collection-type-unsorted-items
 						values: [
 							{
-								displayName: 'Allowed MCP Tools',
-								name: 'allowedMcpTools',
-								type: 'string',
-								default: '*',
-								description: 'Comma-separated list of allowed tools from this server (*	for all)',
-								placeholder: 'read_file,write_file or	*	for all',
-							},
-							{
-								displayName: 'Arguments',
-								name: 'args',
+								displayName: 'Server Name',
+								name: 'name',
 								type: 'string',
 								default: '',
-								description: 'Arguments for the command (space or comma-separated)',
-								placeholder:
-									'-y	@modelcontextprotocol/server-slack or	-y,@modelcontextprotocol/server-filesystem,/path',
+								description: 'Unique identifier for this MCP server',
+								required: true,
+								placeholder: 'e.g., filesystem, github, slack',
 							},
 							{
 								displayName: 'Command',
@@ -180,22 +173,32 @@ export class ClaudeCode implements INodeType {
 								required: true,
 							},
 							{
+								displayName: 'Arguments',
+								name: 'args',
+								type: 'string',
+								default: '',
+								description: 'Arguments for the command (space or comma-separated)',
+								placeholder: '-y @modelcontextprotocol/server-slack or -y,@modelcontextprotocol/server-filesystem,/path',
+							},
+							{
 								displayName: 'Environment Variables',
 								name: 'env',
 								type: 'string',
+								typeOptions: {
+									rows: 4,
+								},
 								default: '',
 								description: 'Environment variables (KEY=value format, one per line)',
 								placeholder: 'GITHUB_TOKEN=${GITHUB_TOKEN}\nAPI_KEY=your-key',
 								hint: 'Use ${VAR_NAME} to reference environment variables from your system',
 							},
 							{
-								displayName: 'Server Name',
-								name: 'name',
+								displayName: 'Allowed MCP Tools',
+								name: 'allowedMcpTools',
 								type: 'string',
-								default: '',
-								description: 'Unique identifier for this MCP server',
-								required: true,
-								placeholder: 'e.g., filesystem, github, slack',
+								default: '*',
+								description: 'Comma-separated list of allowed tools from this server (* for all)',
+								placeholder: 'read_file,write_file or * for all',
 							},
 						],
 					},
