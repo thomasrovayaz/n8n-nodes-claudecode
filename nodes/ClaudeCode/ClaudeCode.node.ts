@@ -178,7 +178,8 @@ export class ClaudeCode implements INodeType {
 								type: 'string',
 								default: '',
 								description: 'Arguments for the command (space or comma-separated)',
-								placeholder: '-y @modelcontextprotocol/server-slack or -y,@modelcontextprotocol/server-filesystem,/path',
+								placeholder:
+									'-y @modelcontextprotocol/server-slack or -y,@modelcontextprotocol/server-filesystem,/path',
 							},
 							{
 								displayName: 'Environment Variables',
