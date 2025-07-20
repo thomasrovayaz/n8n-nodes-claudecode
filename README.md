@@ -25,7 +25,7 @@ Claude Code is an AI-powered coding assistant that can write, edit, and analyze 
 npm install -g @anthropic-ai/claude-code
 
 # Authenticate Claude Code (requires active subscription)
-claude-code auth login
+claude
 ```
 
 The Claude Code CLI must be accessible to the n8n process. If using Docker, you'll need to ensure Claude Code is installed and authenticated within the container.
@@ -68,7 +68,7 @@ This node uses the Claude Code SDK authentication from your system. No credentia
 **Prerequisites:**
 1. Active Claude subscription (Pro or Team)
 2. Claude Code CLI installed globally: `npm install -g @anthropic-ai/claude-code`
-3. Authenticated via: `claude-code auth login`
+3. Authenticated via: `claude`
 
 The authentication is handled by the Claude Code SDK using your system's credentials.
 
@@ -80,7 +80,7 @@ The authentication is handled by the Claude Code SDK using your system's credent
 
 Tested with:
 - n8n: 1.0.0+
-- Node.js: 20.x, 22.x
+- Node.js: 22.x
 
 ## Usage
 
