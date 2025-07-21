@@ -2,7 +2,7 @@
 
 This is an n8n community node. It lets you use Claude Code in your n8n workflows.
 
-Claude Code is an AI-powered coding assistant that can write, edit, and analyze code, execute commands, and work with files through the Claude Code SDK and Model Context Protocol (MCP) servers.
+Claude Code is an AI-powered coding assistant that can write, edit, and analyze code, execute commands, and work with files through the Claude Code SDK.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
@@ -122,22 +122,71 @@ Tested with:
 - **Notebook Read/Edit**: Jupyter notebook support
 - **Todo Write**: Task management
 
+### Using Project Path (Recommended)
+
+The **Project Path** parameter is the recommended way to configure Claude Code for working with specific projects:
+
+1. Set **Project Path** to your project directory (e.g., `/home/user/projects/my-app`)
+2. Claude Code will run with that directory as its working directory
+3. This approach supersedes the Allowed Tools configuration when used effectively
+
+**Benefits of using Project Path:**
+- Access to all project files and directories
+- Ability to run commands in the project context
+- Support for project-specific Claude configurations (see MCP section below)
+- Better isolation and security
+
 ### MCP Server Configuration
 
-Model Context Protocol servers extend Claude's capabilities:
+Model Context Protocol (MCP) servers are configured using Claude's native configuration system with two key files:
 
-1. Click **Add MCP Server**
-2. Configure:
-   - **Server Name**: Unique identifier (e.g., "filesystem")
-   - **Command**: Command to run (e.g., "npx")
-   - **Arguments**: Server arguments (e.g., "-y @modelcontextprotocol/server-filesystem /path")
-   - **Environment Variables**: Required env vars (KEY=value format)
-   - **Allowed Tools**: Specific tools or "*" for all
+1. **Create `.mcp.json` in your project root** to define available MCP servers:
+   ```json
+   {
+     "mcpServers": {
+       "filesystem": {
+         "command": "npx",
+         "args": ["-y", "@modelcontextprotocol/server-filesystem", "/allowed/path"],
+         "description": "Filesystem access to specific directories"
+       },
+       "github": {
+         "command": "npx",
+         "args": ["-y", "@modelcontextprotocol/server-github"],
+         "env": {
+           "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+         }
+       }
+     }
+   }
+   ```
 
-Example MCP servers:
+2. **Create `.claude/settings.json`** to control which servers are enabled:
+   ```json
+   {
+     "enableAllProjectMcpServers": true,
+     "permissions": {
+       "allow": ["Read(*)", "Write(*)", "Edit(*)", "Bash(npm *)"]
+     }
+   }
+   ```
+
+3. **Set the Project Path** in n8n to point to your project directory
+4. Claude Code will automatically:
+   - Load MCP server definitions from `.mcp.json`
+   - Apply settings from `.claude/settings.json` and `.claude/settings.local.json`
+
+**Configuration Files:**
+- `.mcp.json` - Defines MCP servers (project root)
+- `.claude/settings.json` - Team settings (commit to git)
+- `.claude/settings.local.json` - Personal settings (gitignore)
+
+**Example MCP servers:**
 - `@modelcontextprotocol/server-filesystem` - File system access
 - `@modelcontextprotocol/server-github` - GitHub integration
 - `@modelcontextprotocol/server-slack` - Slack integration
+- `@modelcontextprotocol/server-postgres` - PostgreSQL database access
+
+**See the `examples/` directory for complete configuration examples.**
 
 ## Resources
 
@@ -150,7 +199,9 @@ Example MCP servers:
 
 ### 0.2.0 (Upcoming)
 - Added Project Path option to set Claude Code's working directory
-- This allows Claude to access and work with specific code repositories or project directories
+- Moved Project Path to main configuration (no longer in Additional Options)
+- Removed built-in MCP server configuration in favor of Claude's native .claude/settings.local.json
+- MCP servers now configured via project-specific settings files for better security and isolation
 
 ### 0.1.0 (Initial Release)
 - Basic Claude Code SDK integration

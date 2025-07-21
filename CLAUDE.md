@@ -24,12 +24,12 @@ This is an n8n community node that integrates Claude Code SDK into n8n workflows
    - Implements `INodeType` interface from n8n
    - Provides Query and Continue operations
    - Handles Claude Code SDK initialization and message processing
-   - Manages MCP server configurations and tool availability
+   - Manages tool availability and project path configuration
 
 2. **Tool System**
    - Dynamic tool enabling/disabling based on user configuration
    - Supports: Bash, Edit/MultiEdit, Read/Write, Web operations, Todo management
-   - MCP (Model Context Protocol) server integration for extending capabilities
+   - MCP servers supported via Claude's native configuration system (.claude/settings.local.json)
 
 3. **Output Handling**
    - Multiple output formats: structured JSON, messages array, or plain text
@@ -62,10 +62,6 @@ This is an n8n community node that integrates Claude Code SDK into n8n workflows
 - Maximum line width: 100 characters
 - ESLint configured with n8n-nodes-base rules
 
-### MCP Server Configuration
-- Servers defined with command, args, and environment variables
-- Environment variables support multiline values
-- Each server runs as a subprocess managed by Claude Code SDK
 
 ## Testing Approach
 
@@ -75,3 +71,16 @@ No automated tests are configured (typical for n8n community nodes). Testing inv
 3. Starting n8n: `n8n start`
 4. Creating test workflows with various parameter combinations
 5. Using Debug mode to inspect Claude Code interactions
+
+## Configuration Examples
+
+The `examples/` directory contains sample configurations:
+- **simple-project/**: Basic setup without MCP servers
+- **project-with-mcp/**: Full MCP server configuration example
+
+Key configuration files:
+- `.mcp.json`: Defines available MCP servers (project root)
+- `.claude/settings.json`: Team-shared settings
+- `.claude/settings.local.json`: Personal settings (gitignored)
+
+When using Project Path, Claude Code automatically loads these configurations from the specified directory.

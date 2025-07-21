@@ -1,0 +1,9 @@
+# Claude local settings (personal configuration)
+# .claude/settings.local.json
+
+# Environment files
+.env
+.env.local
+
+# Logs
+*.log
