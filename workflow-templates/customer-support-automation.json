@@ -1,0 +1,187 @@
+{
+  "name": "Customer Support Ticket to Code Fix",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhook/support-ticket",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "support-webhook",
+      "name": "Support Ticket Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "support-ticket-handler"
+    },
+    {
+      "parameters": {
+        "operation": "query",
+        "prompt": "='Customer Support Ticket:\\n\\nTitle: ' + $json.body.title + '\\n\\nDescription: ' + $json.body.description + '\\n\\nSteps to Reproduce: ' + $json.body.steps_to_reproduce + '\\n\\nExpected Behavior: ' + $json.body.expected + '\\n\\nActual Behavior: ' + $json.body.actual + '\\n\\n' + 'Customer Email: ' + $json.body.customer_email + '\\n\\nPlease:\\n1. Analyze this issue and identify the root cause\\n2. Search the codebase for related code\\n3. Generate a fix for the problem\\n4. Create test cases to verify the fix\\n5. Provide a workaround the customer can use immediately'",
+        "model": "opus",
+        "projectPath": "/path/to/your/application",
+        "maxTurns": 20,
+        "timeout": 600,
+        "outputFormat": "structured",
+        "allowedTools": [
+          "Read",
+          "Write",
+          "Edit",
+          "MultiEdit",
+          "Grep",
+          "Glob",
+          "Bash",
+          "Task",
+          "TodoWrite"
+        ],
+        "additionalOptions": {
+          "systemPrompt": "You are a senior developer handling customer support issues. Focus on finding quick, reliable fixes while maintaining code quality. Always provide workarounds when possible."
+        }
+      },
+      "id": "analyze-and-fix",
+      "name": "Analyze & Fix Issue",
+      "type": "@holtweb/n8n-nodes-claudecode.claudeCode",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "operation": "query",
+        "prompt": "Run all tests related to the fix we just implemented. Make sure nothing is broken. If test passed then return 'PASSED' else return 'FAILED'",
+        "model": "sonnet",
+        "projectPath": "/path/to/your/application",
+        "maxTurns": 5,
+        "timeout": 300,
+        "outputFormat": "text",
+        "allowedTools": [
+          "Bash",
+          "Read"
+        ]
+      },
+      "id": "run-tests",
+      "name": "Run Tests",
+      "type": "@holtweb/n8n-nodes-claudecode.claudeCode",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node['Run Tests'].json.includes('PASSED')}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-tests",
+      "name": "Tests Passed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "resource": "repository",
+        "operation": "createPullRequest",
+        "owner": "your-org",
+        "repository": "your-repo",
+        "title": "=fix: Customer issue - {{ $node['Support Ticket Webhook'].json.body.title }}",
+        "body": "=## Customer Issue Fix\\n\\n**Ticket ID:** {{ $node['Support Ticket Webhook'].json.body.ticket_id }}\\n\\n**Problem:** {{ $node['Support Ticket Webhook'].json.body.title }}\\n\\n**Root Cause:**\\n{{ $node['Analyze & Fix Issue'].json.summary.root_cause }}\\n\\n**Solution:**\\n{{ $node['Analyze & Fix Issue'].json.summary.solution }}\\n\\n**Tests:** All tests passing ✅\\n\\n---\\n*This fix was automatically generated and tested by Claude Code*",
+        "head": "=fix/ticket-{{ $node['Support Ticket Webhook'].json.body.ticket_id }}",
+        "base": "main"
+      },
+      "id": "create-pr",
+      "name": "Create Pull Request",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [1050, 250]
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "operation": "create",
+        "to": "={{ $node['Support Ticket Webhook'].json.body.customer_email }}",
+        "subject": "=Re: {{ $node['Support Ticket Webhook'].json.body.title }} - Fix in Progress",
+        "message": "=Hi {{ $node['Support Ticket Webhook'].json.body.customer_name }},\\n\\nThank you for reporting this issue. We've identified the problem and have already developed a fix that's currently being reviewed.\\n\\n**Immediate Workaround:**\\n{{ $node['Analyze & Fix Issue'].json.summary.workaround }}\\n\\n**Permanent Fix:**\\nWe expect the fix to be deployed within the next 2-4 hours. You'll receive another email once it's live.\\n\\n**Technical Details:**\\n{{ $node['Analyze & Fix Issue'].json.summary.explanation }}\\n\\nWe apologize for any inconvenience this may have caused. If you have any questions or need further assistance, please don't hesitate to reach out.\\n\\nBest regards,\\nYour Support Team\\n\\n---\\n*Ticket Reference: {{ $node['Support Ticket Webhook'].json.body.ticket_id }}*"
+      },
+      "id": "email-customer",
+      "name": "Email Customer",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [1050, 350]
+    },
+    {
+      "parameters": {
+        "resource": "ticket",
+        "operation": "update",
+        "ticketId": "={{ $node['Support Ticket Webhook'].json.body.ticket_id }}",
+        "updateFields": {
+          "status": "in_progress",
+          "priority": "high",
+          "tags": ["auto-fixed", "claude-code"],
+          "internal_notes": "=Automated fix generated:\\n\\nPR: {{ $node['Create Pull Request'].json.html_url }}\\n\\nRoot cause: {{ $node['Analyze & Fix Issue'].json.summary.root_cause }}\\n\\nWorkaround provided to customer."
+        }
+      },
+      "id": "update-ticket",
+      "name": "Update Support Ticket",
+      "type": "n8n-nodes-base.zendesk",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "channel": "#engineering-alerts",
+        "text": "=🚨 Customer Issue Auto-Fixed\\n\\n*Ticket:* {{ $node['Support Ticket Webhook'].json.body.title }}\\n*Customer:* {{ $node['Support Ticket Webhook'].json.body.customer_name }}\\n*Status:* Fix generated and tested\\n*PR:* {{ $node['Create Pull Request'].json.html_url }}\\n\\n*Action Required:* Please review and merge the PR",
+        "authentication": "webhook"
+      },
+      "id": "notify-team",
+      "name": "Notify Engineering Team",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1450, 300]
+    }
+  ],
+  "connections": {
+    "Support Ticket Webhook": {
+      "main": [[{"node": "Analyze & Fix Issue", "type": "main", "index": 0}]]
+    },
+    "Analyze & Fix Issue": {
+      "main": [[{"node": "Run Tests", "type": "main", "index": 0}]]
+    },
+    "Run Tests": {
+      "main": [[{"node": "Tests Passed?", "type": "main", "index": 0}]]
+    },
+    "Tests Passed?": {
+      "main": [
+        [
+          {"node": "Create Pull Request", "type": "main", "index": 0},
+          {"node": "Email Customer", "type": "main", "index": 0}
+        ],
+        [
+          {"node": "Notify Engineering Team", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Create Pull Request": {
+      "main": [[{"node": "Update Support Ticket", "type": "main", "index": 0}]]
+    },
+    "Email Customer": {
+      "main": [[{"node": "Update Support Ticket", "type": "main", "index": 0}]]
+    },
+    "Update Support Ticket": {
+      "main": [[{"node": "Notify Engineering Team", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateId": "claude-code-support-automation"
+  },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "triggerCount": 0
+}
