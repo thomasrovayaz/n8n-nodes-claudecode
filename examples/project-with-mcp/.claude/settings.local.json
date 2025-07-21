@@ -1,0 +1,20 @@
+{
+  "enableAllProjectMcpServers": true,
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git *)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(curl *)"
+    ]
+  },
+  "env": {
+    "PROJECT_ENV": "development",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "0"
+  }
+}
