@@ -33,3 +33,7 @@ coverage/
 
 # Keep only the built files
 !dist/
+
+# Examples
+examples/
+workflow-templates/

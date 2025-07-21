@@ -1,0 +1,165 @@
+{
+  "name": "Automated Documentation Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtDay": [1],
+              "triggerAtHour": 9,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "schedule-docs",
+      "name": "Weekly Documentation Update",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "query",
+        "prompt": "Analyze the entire codebase and generate comprehensive documentation:\\n\\n1. Project overview and architecture\\n2. API documentation with examples\\n3. Component/module documentation\\n4. Setup and installation guide\\n5. Configuration options\\n6. Troubleshooting guide\\n7. Code examples and best practices\\n\\nCheck for any undocumented code and create appropriate documentation. Update existing docs if they're outdated.",
+        "model": "opus",
+        "projectPath": "/path/to/your/project",
+        "maxTurns": 20,
+        "timeout": 900,
+        "outputFormat": "structured",
+        "allowedTools": [
+          "Read",
+          "Write",
+          "Edit",
+          "MultiEdit",
+          "Glob",
+          "Grep",
+          "Task",
+          "TodoWrite"
+        ],
+        "additionalOptions": {
+          "systemPrompt": "You are a technical writer creating clear, comprehensive documentation. Focus on clarity, completeness, and practical examples. Use markdown format and include code examples where helpful."
+        }
+      },
+      "id": "generate-docs",
+      "name": "Generate Documentation",
+      "type": "@holtweb/n8n-nodes-claudecode.claudeCode",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "operation": "query",
+        "prompt": "Create a visual architecture diagram for the project using Mermaid syntax. Include:\\n1. Main components and their relationships\\n2. Data flow\\n3. External dependencies\\n4. API structure\\n\\nSave the diagram in the docs folder.",
+        "model": "sonnet",
+        "projectPath": "/path/to/your/project",
+        "maxTurns": 5,
+        "timeout": 180,
+        "outputFormat": "text",
+        "allowedTools": [
+          "Read",
+          "Write",
+          "Glob"
+        ]
+      },
+      "id": "create-diagrams",
+      "name": "Create Architecture Diagrams",
+      "type": "@holtweb/n8n-nodes-claudecode.claudeCode",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "command": "cd /path/to/your/project && npm run build-docs",
+        "cwd": "/path/to/your/project"
+      },
+      "id": "build-docs-site",
+      "name": "Build Documentation Site",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "resource": "channel",
+        "operation": "send",
+        "channel": "engineering",
+        "messageType": "block",
+        "blocksUi": {
+          "blocks": [
+            {
+              "type": "header",
+              "text": {
+                "type": "plain_text",
+                "text": "📚 Documentation Updated"
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Weekly documentation update complete!*\\n\\n{{ $node['Generate Documentation'].json.summary.filesUpdated }} files updated\\n{{ $node['Generate Documentation'].json.summary.newSections }} new sections added"
+              }
+            },
+            {
+              "type": "section",
+              "fields": [
+                {
+                  "type": "mrkdwn",
+                  "text": "*Status:* ✅ Success"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Duration:* {{ Math.round($node['Generate Documentation'].json.metrics.duration_ms / 1000) }}s"
+                }
+              ]
+            },
+            {
+              "type": "actions",
+              "elements": [
+                {
+                  "type": "button",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "View Documentation"
+                  },
+                  "url": "https://docs.yourproject.com"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "id": "notify-team",
+      "name": "Notify Team",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "Weekly Documentation Update": {
+      "main": [[{"node": "Generate Documentation", "type": "main", "index": 0}]]
+    },
+    "Generate Documentation": {
+      "main": [[{"node": "Create Architecture Diagrams", "type": "main", "index": 0}]]
+    },
+    "Create Architecture Diagrams": {
+      "main": [[{"node": "Build Documentation Site", "type": "main", "index": 0}]]
+    },
+    "Build Documentation Site": {
+      "main": [[{"node": "Notify Team", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateId": "claude-code-documentation-generator"
+  },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "triggerCount": 0
+}
