@@ -1,0 +1,96 @@
+{
+  "name": "Automatic Bug Fixer",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "webhook/github-issue",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook-github",
+      "name": "GitHub Issue Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "query",
+        "prompt": "='Bug Report:\\n' + $json.body.issue.title + '\\n\\n' + $json.body.issue.body + '\\n\\nAnalyze this bug report and create a fix. Look through the codebase to understand the issue, then implement a solution. Include:\\n1. Root cause analysis\\n2. The fix implementation\\n3. Any necessary tests\\n4. Explanation of the changes'",
+        "model": "opus",
+        "projectPath": "/path/to/your/project",
+        "maxTurns": 20,
+        "timeout": 600,
+        "outputFormat": "structured",
+        "allowedTools": [
+          "Read",
+          "Write",
+          "Edit",
+          "MultiEdit",
+          "Grep",
+          "Glob",
+          "Bash",
+          "Task"
+        ]
+      },
+      "id": "claude-analyzer",
+      "name": "Analyze & Fix Bug",
+      "type": "@holtweb/n8n-nodes-claudecode.claudeCode",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "push",
+        "owner": "={{ $json.body.repository.owner.login }}",
+        "repository": "={{ $json.body.repository.name }}",
+        "filePath": "={{ 'fixes/issue-' + $json.body.issue.number + '.patch' }}",
+        "fileContent": "={{ $node['Analyze & Fix Bug'].json.result }}",
+        "commitMessage": "=fix: Automated fix for issue #{{ $json.body.issue.number }}",
+        "additionalParameters": {}
+      },
+      "id": "push-fix",
+      "name": "Push Fix to GitHub",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "resource": "issue",
+        "operation": "createComment",
+        "owner": "={{ $json.body.repository.owner.login }}",
+        "repository": "={{ $json.body.repository.name }}",
+        "issueNumber": "={{ $json.body.issue.number }}",
+        "body": "=🤖 **Claude Code Analysis Complete**\\n\\n{{ $node['Analyze & Fix Bug'].json.result }}\\n\\n---\\n*Automated fix has been pushed to the repository. Please review the changes.*"
+      },
+      "id": "comment-issue",
+      "name": "Comment on Issue",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "GitHub Issue Webhook": {
+      "main": [[{"node": "Analyze & Fix Bug", "type": "main", "index": 0}]]
+    },
+    "Analyze & Fix Bug": {
+      "main": [[{"node": "Push Fix to GitHub", "type": "main", "index": 0}]]
+    },
+    "Push Fix to GitHub": {
+      "main": [[{"node": "Comment on Issue", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateId": "claude-code-bug-fixer"
+  },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "triggerCount": 0
+}

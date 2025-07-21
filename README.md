@@ -1,211 +1,240 @@
-# n8n-nodes-claudecode
+# 🚀 Claude Code for n8n
 
-This is an n8n community node. It lets you use Claude Code in your n8n workflows.
+**Bring the power of Claude Code directly into your n8n automation workflows!**
 
-Claude Code is an AI-powered coding assistant that can write, edit, and analyze code, execute commands, and work with files through the Claude Code SDK.
+Imagine having an AI coding assistant that can analyze your codebase, fix bugs, write new features, manage databases, interact with APIs, and automate your entire development workflow - all within n8n. That's exactly what this node enables.
 
-[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
+[![n8n](https://img.shields.io/badge/n8n-community-node-orange.svg)](https://n8n.io/)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Powered-blue.svg)](https://claude.ai/code)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
 
-[Installation](#installation)  
-[Operations](#operations)  
-[Credentials](#credentials)  
-[Compatibility](#compatibility)  
-[Usage](#usage)  
-[Resources](#resources)  
-[Version history](#version-history)
+## 🌟 What Can You Build?
 
-## Installation
+### 🔧 **Automated Code Reviews**
+Create workflows that automatically review pull requests, suggest improvements, and even fix issues before merging.
 
-### Prerequisites
+### 🐛 **Intelligent Bug Fixing**
+Connect error monitoring tools to Claude Code - automatically diagnose and fix production issues in real-time.
 
-**Important**: This node requires Claude Code to be installed and authenticated on the n8n server:
+### 📊 **Database Management**
+Let Claude Code write complex SQL queries, optimize database schemas, and generate migration scripts based on your requirements.
+
+### 🤖 **Self-Improving Workflows**
+Build n8n workflows that can modify and improve themselves using Claude Code's capabilities.
+
+### 📝 **Documentation Generation**
+Automatically generate and update documentation for your entire codebase, APIs, or databases.
+
+### 🔄 **Code Migration**
+Automate the migration of legacy codebases to modern frameworks with intelligent refactoring.
+
+## ⚡ Quick Start
 
 ```bash
-# Install Claude Code globally
+# Install Claude Code CLI
 npm install -g @anthropic-ai/claude-code
 
-# Authenticate Claude Code (requires active subscription)
+# Authenticate (requires Claude Pro/Team subscription)
 claude
+
+# Install the n8n node
+# In n8n: Settings → Community Nodes → Install → @holtweb/n8n-nodes-claudecode
 ```
 
-The Claude Code CLI must be accessible to the n8n process. If using Docker, you'll need to ensure Claude Code is installed and authenticated within the container.
+## 🎯 Real-World Use Cases
 
-### Installing the n8n Community Node
+### 1. **GitHub Issue to Code**
+```
+Webhook (GitHub Issue) → Claude Code → Create PR → Notify Slack
+```
+Automatically implement features or fix bugs when issues are created.
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
+### 2. **Database Query Builder**
+```
+Form Trigger → Claude Code → Execute Query → Send Results
+```
+Natural language to SQL - let non-technical users query databases safely.
 
-**Using the n8n UI:**
-1. Go to **Settings** > **Community Nodes**
-2. Click **Install a community node**
-3. Enter `@holtweb/n8n-nodes-claudecode`
-4. Click **Install**
+### 3. **Code Quality Guardian**
+```
+Git Push → Claude Code → Analyze Code → Block/Approve → Notify
+```
+Enforce coding standards and catch issues before they reach production.
 
-**Manual installation:**
-```bash
-cd ~/.n8n/nodes
-npm install @holtweb/n8n-nodes-claudecode
-# Restart n8n
+### 4. **API Integration Builder**
+```
+HTTP Request → Claude Code → Generate Integration → Test → Deploy
+```
+Automatically create integrations with third-party APIs.
+
+### 5. **Intelligent Log Analysis**
+```
+Error Logs → Claude Code → Diagnose → Create Fix → Open PR
+```
+Turn error logs into actionable fixes automatically.
+
+## 🛠️ Powerful Features
+
+### **Project Context Awareness**
+Set a project path and Claude Code understands your entire codebase context:
+- Analyzes existing code patterns
+- Follows your coding standards
+- Understands your architecture
+- Respects your dependencies
+
+### **Tool Arsenal**
+Claude Code comes equipped with powerful tools:
+- 📁 **File Operations**: Read, write, edit multiple files
+- 💻 **Bash Commands**: Execute any command
+- 🔍 **Smart Search**: Find patterns across your codebase
+- 🌐 **Web Access**: Fetch documentation and resources
+- 📊 **Database Access**: Via MCP servers
+- 🔗 **API Integration**: GitHub, Slack, and more via MCP
+
+### **Model Context Protocol (MCP)**
+Extend Claude Code with specialized capabilities:
+- PostgreSQL/MySQL database access
+- GitHub repository management
+- Slack workspace integration
+- Custom tool development
+
+## 📋 Configuration Examples
+
+### Simple Code Analysis
+```javascript
+{
+  "operation": "query",
+  "prompt": "Analyze this codebase and suggest performance improvements",
+  "projectPath": "/path/to/your/project",
+  "model": "sonnet"
+}
 ```
 
-**Docker installation:**
-```bash
-docker run -it --rm \
-  -p 5678:5678 \
-  -e N8N_COMMUNITY_NODE_PACKAGES=@holtweb/n8n-nodes-claudecode \
-  -v ~/.n8n:/home/node/.n8n \
-  n8nio/n8n
+### Advanced Database Operations
+```javascript
+{
+  "operation": "query",
+  "prompt": "Create an optimized query to find users who haven't logged in for 30 days",
+  "projectPath": "/path/to/project",
+  "model": "opus"
+}
 ```
 
-## Operations
+With MCP configuration (`.mcp.json`):
+```json
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"]
+    }
+  }
+}
+```
 
-- **Query**: Start a new conversation with Claude Code
-- **Continue**: Continue a previous conversation (requires prior query)
+## 🔄 Workflow Patterns
 
-## Credentials
+### Pattern 1: Continuous Code Improvement
+```
+Schedule Trigger (Daily)
+  ↓
+Claude Code (Analyze codebase for improvements)
+  ↓
+Create GitHub Issues
+  ↓
+Assign to Team
+```
 
-This node uses the Claude Code SDK authentication from your system. No credentials need to be configured within n8n itself.
+### Pattern 2: Natural Language to Code
+```
+Slack Command
+  ↓
+Claude Code (Generate code from description)
+  ↓
+Create Pull Request
+  ↓
+Run Tests
+  ↓
+Notify Results
+```
 
-**Prerequisites:**
-1. Active Claude subscription (Pro or Team)
-2. Claude Code CLI installed globally: `npm install -g @anthropic-ai/claude-code`
-3. Authenticated via: `claude`
+### Pattern 3: Intelligent Monitoring
+```
+Error Webhook
+  ↓
+Claude Code (Diagnose issue)
+  ↓
+If (Can fix automatically)
+  ├─ Yes: Create Fix PR
+  └─ No: Create Detailed Issue
+```
 
-The authentication is handled by the Claude Code SDK using your system's credentials.
+## 🚦 Getting Started
 
-## Compatibility
-
-- **n8n version**: 1.0.0 or later
-- **Node.js**: 20.15 or later
-- **Claude Code SDK**: Latest version
-
-Tested with:
-- n8n: 1.0.0+
-- Node.js: 22.x
-
-## Usage
-
-### Basic Workflow
-
-1. Add the **Claude Code** node to your workflow
-2. Select **Query** operation
-3. Enter your prompt (e.g., "Do some research on MCP servers")
-4. Configure the model (Claude 4 Sonnet or Claude 4 Opus)
-5. Select which tools Claude can use + configure MCP
-6. Execute the node
-
-### Configuration Options
-
-**Main Parameters:**
-- **Operation**: Query or Continue
-- **Prompt**: Your instruction or question for Claude
-- **Model**: Choose between Claude 4 Sonnet (faster & default) or Claude 4 Opus (more capable)
-- **Max Turns**: Maximum conversation turns (default: 5)
-- **Timeout**: Operation timeout in seconds (default: 300)
-- **Output Format**: 
-  - Structured: Complete response with messages, summary, metrics
-  - Messages: Raw array of all messages
-  - Text: Final result only
-
-**Additional Options:**
-- **System Prompt**: Additional context or instructions for Claude Code
-- **Require Permissions**: Whether to require permission for tool use
-- **Debug Mode**: Enable debug logging for troubleshooting
-- **Project Path**: Directory path where Claude Code should run (e.g., /path/to/project). This allows Claude to access and work with files in a specific repository or project directory
-
-**Available Tools:**
-- **Bash**: Execute bash commands
-- **Edit/MultiEdit**: Edit files
-- **Read/Write**: File operations
-- **Glob/Grep/LS**: File searching
-- **Task**: Launch agents for complex searches
-- **Web Fetch/Search**: Web operations
-- **Notebook Read/Edit**: Jupyter notebook support
-- **Todo Write**: Task management
-
-### Using Project Path (Recommended)
-
-The **Project Path** parameter is the recommended way to configure Claude Code for working with specific projects:
-
-1. Set **Project Path** to your project directory (e.g., `/home/user/projects/my-app`)
-2. Claude Code will run with that directory as its working directory
-3. This approach supersedes the Allowed Tools configuration when used effectively
-
-**Benefits of using Project Path:**
-- Access to all project files and directories
-- Ability to run commands in the project context
-- Support for project-specific Claude configurations (see MCP section below)
-- Better isolation and security
-
-### MCP Server Configuration
-
-Model Context Protocol (MCP) servers are configured using Claude's native configuration system with two key files:
-
-1. **Create `.mcp.json` in your project root** to define available MCP servers:
-   ```json
-   {
-     "mcpServers": {
-       "filesystem": {
-         "command": "npx",
-         "args": ["-y", "@modelcontextprotocol/server-filesystem", "/allowed/path"],
-         "description": "Filesystem access to specific directories"
-       },
-       "github": {
-         "command": "npx",
-         "args": ["-y", "@modelcontextprotocol/server-github"],
-         "env": {
-           "GITHUB_TOKEN": "${GITHUB_TOKEN}"
-         }
-       }
-     }
-   }
+1. **Install Prerequisites**
+   ```bash
+   npm install -g @anthropic-ai/claude-code
+   claude  # Authenticate with your Claude account
    ```
 
-2. **Create `.claude/settings.json`** to control which servers are enabled:
-   ```json
-   {
-     "enableAllProjectMcpServers": true,
-     "permissions": {
-       "allow": ["Read(*)", "Write(*)", "Edit(*)", "Bash(npm *)"]
-     }
-   }
-   ```
+2. **Install the Node**
+   - In n8n: Settings → Community Nodes
+   - Install: `@holtweb/n8n-nodes-claudecode`
 
-3. **Set the Project Path** in n8n to point to your project directory
-4. Claude Code will automatically:
-   - Load MCP server definitions from `.mcp.json`
-   - Apply settings from `.claude/settings.json` and `.claude/settings.local.json`
+3. **Create Your First Workflow**
+   - Add Claude Code node
+   - Set your project path
+   - Enter a prompt
+   - Watch the magic happen!
 
-**Configuration Files:**
-- `.mcp.json` - Defines MCP servers (project root)
-- `.claude/settings.json` - Team settings (commit to git)
-- `.claude/settings.local.json` - Personal settings (gitignore)
+## 💡 Pro Tips
 
-**Example MCP servers:**
-- `@modelcontextprotocol/server-filesystem` - File system access
-- `@modelcontextprotocol/server-github` - GitHub integration
-- `@modelcontextprotocol/server-slack` - Slack integration
-- `@modelcontextprotocol/server-postgres` - PostgreSQL database access
+### 🎯 **Use Project Paths**
+Always set a project path for better context and results:
+```
+/home/user/projects/my-app
+```
 
-**See the `examples/` directory for complete configuration examples.**
+### 🔒 **Configure Permissions**
+Control what Claude Code can do in `.claude/settings.json`:
+```json
+{
+  "permissions": {
+    "allow": ["Read(*)", "Write(*)", "Bash(npm test)"],
+    "deny": ["Bash(rm -rf *)"]
+  }
+}
+```
 
-## Resources
+### 🔗 **Chain Operations**
+Use "Continue" operation to build complex multi-step workflows while maintaining context.
 
-* [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
-* [Claude Code documentation](https://docs.anthropic.com/claude-code)
-* [Model Context Protocol](https://modelcontextprotocol.io)
-* [GitHub repository](https://github.com/holt-web-ai/n8n-nodes-claudecode)
+### 📊 **Output Formats**
+- **Structured**: Full details with metrics
+- **Messages**: For debugging
+- **Text**: Simple results for chaining
 
-## Version history
+## 🤝 Community & Support
 
-### 0.2.0 (Upcoming)
-- Added Project Path option to set Claude Code's working directory
-- Moved Project Path to main configuration (no longer in Additional Options)
-- Removed built-in MCP server configuration in favor of Claude's native .claude/settings.local.json
-- MCP servers now configured via project-specific settings files for better security and isolation
+- 📖 [Documentation](https://github.com/holt-web-ai/n8n-nodes-claudecode)
+- 🐛 [Report Issues](https://github.com/holt-web-ai/n8n-nodes-claudecode/issues)
+- 💬 [Discussions](https://github.com/holt-web-ai/n8n-nodes-claudecode/discussions)
+- 🌟 [Star on GitHub](https://github.com/holt-web-ai/n8n-nodes-claudecode)
 
-### 0.1.0 (Initial Release)
-- Basic Claude Code SDK integration
-- Support for Query and Continue operations
-- MCP server configuration
-- Multiple output formats
-- Tool selection and control
+## 📈 What's Next?
+
+We're constantly improving! Upcoming features:
+- Visual workflow builder for Claude Code operations
+- Pre-built workflow templates
+- Enhanced debugging tools
+- More MCP server integrations
+
+## 📄 License
+
+MIT - Build amazing things!
+
+---
+
+**Ready to revolutionize your development workflow?** Install Claude Code for n8n today and join the future of automated software development!
+
+Made with ❤️ by [Adam Holt](https://github.com/holt-web-ai)
