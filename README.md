@@ -106,6 +106,12 @@ Tested with:
   - Messages: Raw array of all messages
   - Text: Final result only
 
+**Additional Options:**
+- **System Prompt**: Additional context or instructions for Claude Code
+- **Require Permissions**: Whether to require permission for tool use
+- **Debug Mode**: Enable debug logging for troubleshooting
+- **Project Path**: Directory path where Claude Code should run (e.g., /path/to/project). This allows Claude to access and work with files in a specific repository or project directory
+
 **Available Tools:**
 - **Bash**: Execute bash commands
 - **Edit/MultiEdit**: Edit files
@@ -141,6 +147,10 @@ Example MCP servers:
 * [GitHub repository](https://github.com/holt-web-ai/n8n-nodes-claudecode)
 
 ## Version history
+
+### 0.2.0 (Upcoming)
+- Added Project Path option to set Claude Code's working directory
+- This allows Claude to access and work with specific code repositories or project directories
 
 ### 0.1.0 (Initial Release)
 - Basic Claude Code SDK integration

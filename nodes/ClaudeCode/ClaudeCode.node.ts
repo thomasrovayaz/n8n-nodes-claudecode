@@ -238,6 +238,16 @@ export class ClaudeCode implements INodeType {
 						default: false,
 						description: 'Whether to enable debug logging',
 					},
+					{
+						displayName: 'Project Path',
+						name: 'projectPath',
+						type: 'string',
+						default: '',
+						description:
+							'The directory path where Claude Code should run (e.g., /path/to/project). If empty, uses the current working directory.',
+						placeholder: '/home/user/projects/my-app',
+						hint: 'This sets the working directory for Claude Code, allowing it to access files and run commands in the specified project location',
+					},
 				],
 			},
 		],
@@ -270,6 +280,7 @@ export class ClaudeCode implements INodeType {
 					systemPrompt?: string;
 					requirePermissions?: boolean;
 					debug?: boolean;
+					projectPath?: string;
 				};
 
 				// Create abort controller for timeout
@@ -298,6 +309,7 @@ export class ClaudeCode implements INodeType {
 				interface QueryOptions {
 					prompt: string;
 					abortController: AbortController;
+					cwd?: string;
 					options: {
 						maxTurns: number;
 						permissionMode: 'default' | 'bypassPermissions';
@@ -322,6 +334,14 @@ export class ClaudeCode implements INodeType {
 				// Add optional parameters
 				if (additionalOptions.systemPrompt) {
 					queryOptions.options.systemPrompt = additionalOptions.systemPrompt;
+				}
+
+				// Add project path (cwd) if specified
+				if (additionalOptions.projectPath && additionalOptions.projectPath.trim() !== '') {
+					queryOptions.cwd = additionalOptions.projectPath.trim();
+					if (additionalOptions.debug) {
+						console.log(`[ClaudeCode] Working directory set to: ${queryOptions.cwd}`);
+					}
 				}
 
 				// Process allowed tools - start with built-in tools
