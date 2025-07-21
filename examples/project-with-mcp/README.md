@@ -48,6 +48,8 @@ Replace the following in `.mcp.json` with actual values:
 
 ## Security Notes
 
-- Never commit `.claude/settings.local.json` (contains personal settings)
+- **Important**: In a real project, add `.claude/settings.local.json` to your `.gitignore`
+- This example includes it for demonstration purposes only
+- Never commit personal settings or tokens to version control
 - Use environment variables for sensitive data
 - Review permissions carefully before enabling MCP servers

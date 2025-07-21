@@ -1,5 +1,6 @@
 # Claude local settings (personal configuration)
-.claude/settings.local.json
+# NOTE: In a real project, you should uncomment the line below:
+# .claude/settings.local.json
 
 # Environment files
 .env
