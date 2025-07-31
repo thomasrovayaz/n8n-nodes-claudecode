@@ -6,7 +6,7 @@ Imagine having an AI coding assistant that can analyze your codebase, fix bugs, 
 
 [![n8n](https://img.shields.io/badge/n8n-community_node-orange.svg)](https://n8n.io/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Powered-blue.svg)](https://claude.ai/code)
-[![npm](https://img.shields.io/npm/v/@holtweb/n8n-nodes-claudecode.svg)](https://www.npmjs.com/package/@holtweb/n8n-nodes-claudecode)
+[![npm](https://img.shields.io/npm/v/@johnlindquist/n8n-nodes-claudecode.svg)](https://www.npmjs.com/package/@johnlindquist/n8n-nodes-claudecode)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
 
 ## 🌟 What Can You Build?
@@ -52,14 +52,14 @@ Transform support tickets into code fixes automatically:
 1. Open your n8n instance
 2. Go to **Settings** → **Community Nodes**
 3. Click **Install a community node**
-4. Enter: `@holtweb/n8n-nodes-claudecode`
+4. Enter: `@johnlindquist/n8n-nodes-claudecode`
 5. Click **Install**
 6. Restart n8n when prompted
 
 #### Option 2: Manual Installation
 ```bash
 cd ~/.n8n/nodes
-npm install @holtweb/n8n-nodes-claudecode
+npm install @johnlindquist/n8n-nodes-claudecode
 # Restart n8n
 ```
 
@@ -67,14 +67,14 @@ npm install @holtweb/n8n-nodes-claudecode
 ```bash
 docker run -it --rm \
   -p 5678:5678 \
-  -e N8N_COMMUNITY_NODE_PACKAGES=@holtweb/n8n-nodes-claudecode \
+  -e N8N_COMMUNITY_NODE_PACKAGES=@johnlindquist/n8n-nodes-claudecode \
   -v ~/.n8n:/home/node/.n8n \
   n8nio/n8n
 ```
 
 **Note**: For Docker, you'll need to ensure Claude Code CLI is installed inside the container. Consider creating a custom Dockerfile.
 
-📦 **NPM Package**: [@holtweb/n8n-nodes-claudecode](https://www.npmjs.com/package/@holtweb/n8n-nodes-claudecode)
+📦 **NPM Package**: [@johnlindquist/n8n-nodes-claudecode](https://www.npmjs.com/package/@johnlindquist/n8n-nodes-claudecode)
 
 ## 🎯 Real-World Use Cases
 
@@ -280,10 +280,10 @@ Use "Continue" operation to build complex multi-step workflows while maintaining
 
 ## 🤝 Community & Support
 
-- 📖 [Documentation](https://github.com/holt-web-ai/n8n-nodes-claudecode)
-- 🐛 [Report Issues](https://github.com/holt-web-ai/n8n-nodes-claudecode/issues)
-- 💬 [Discussions](https://github.com/holt-web-ai/n8n-nodes-claudecode/discussions)
-- 🌟 [Star on GitHub](https://github.com/holt-web-ai/n8n-nodes-claudecode)
+- 📖 [Documentation](https://github.com/johnlindquist/n8n-nodes-claudecode)
+- 🐛 [Report Issues](https://github.com/johnlindquist/n8n-nodes-claudecode/issues)
+- 💬 [Discussions](https://github.com/johnlindquist/n8n-nodes-claudecode/discussions)
+- 🌟 [Star on GitHub](https://github.com/johnlindquist/n8n-nodes-claudecode)
 
 ## 📈 What's Next?
 
@@ -301,4 +301,6 @@ MIT - Build amazing things!
 
 **Ready to revolutionize your development workflow?** Install Claude Code for n8n today and join the future of automated software development!
 
-Made with ❤️ by [Adam Holt](https://github.com/holt-web-ai)
+Originally created by [Adam Holt](https://github.com/holt-web-ai) - [Original Repository](https://github.com/holt-web-ai/n8n-nodes-claudecode)
+
+Forked and maintained by [John Lindquist](https://github.com/johnlindquist)
