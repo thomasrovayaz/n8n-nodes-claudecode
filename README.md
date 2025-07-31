@@ -132,6 +132,13 @@ Claude Code comes equipped with powerful tools:
 - 📊 **Database Access**: Via MCP servers
 - 🔗 **API Integration**: GitHub, Slack, and more via MCP
 
+### **Advanced SDK Options**
+Fine-tune Claude Code's behavior with these powerful options:
+- 🚫 **Disallowed Tools**: Explicitly block specific tools for security
+- 🔄 **Fallback Model**: Automatically switch models when primary is overloaded
+- 🧠 **Max Thinking Tokens**: Control Claude's internal reasoning depth
+- 🔐 **Permission Modes**: Choose from `default`, `acceptEdits`, `bypassPermissions`, or `plan`
+
 ### **Model Context Protocol (MCP)**
 Extend Claude Code with specialized capabilities:
 - PostgreSQL/MySQL database access
@@ -171,6 +178,24 @@ Extend Claude Code with specialized capabilities:
   "allowedTools": ["Read", "Write", "Edit", "Bash", "Grep"],
   "additionalOptions": {
     "systemPrompt": "Focus on mobile compatibility issues. Check responsive CSS and JavaScript event handlers."
+  }
+}
+```
+
+### Advanced Configuration with SDK Options
+```javascript
+{
+  "operation": "query",
+  "prompt": "Refactor this legacy code to use modern patterns",
+  "projectPath": "/path/to/legacy-app",
+  "model": "opus",
+  "allowedTools": ["Read", "Write", "Edit", "MultiEdit", "Grep"],
+  "disallowedTools": ["Bash"],  // Prevent command execution for safety
+  "additionalOptions": {
+    "permissionMode": "plan",  // Claude will plan before executing
+    "fallbackModel": "sonnet",  // Auto-switch if Opus is overloaded
+    "maxThinkingTokens": 50000,  // Allow deep reasoning for complex refactoring
+    "systemPrompt": "Preserve all existing functionality while modernizing the code"
   }
 }
 ```

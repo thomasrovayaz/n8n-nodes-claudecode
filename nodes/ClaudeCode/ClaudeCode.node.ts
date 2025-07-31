@@ -151,12 +151,106 @@ export class ClaudeCode implements INodeType {
 				description: 'Select which built-in tools Claude Code is allowed to use during execution',
 			},
 			{
+				displayName: 'Disallowed Tools',
+				name: 'disallowedTools',
+				type: 'multiOptions',
+				options: [
+					// Built-in Claude Code tools
+					{ name: 'Bash', value: 'Bash', description: 'Execute bash commands' },
+					{ name: 'Edit', value: 'Edit', description: 'Edit files' },
+					{ name: 'Exit Plan Mode', value: 'exit_plan_mode', description: 'Exit planning mode' },
+					{ name: 'Glob', value: 'Glob', description: 'Find files by pattern' },
+					{ name: 'Grep', value: 'Grep', description: 'Search file contents' },
+					{ name: 'LS', value: 'LS', description: 'List directory contents' },
+					{ name: 'MultiEdit', value: 'MultiEdit', description: 'Make multiple edits' },
+					{ name: 'Notebook Edit', value: 'NotebookEdit', description: 'Edit Jupyter notebooks' },
+					{ name: 'Notebook Read', value: 'NotebookRead', description: 'Read Jupyter notebooks' },
+					{ name: 'Read', value: 'Read', description: 'Read file contents' },
+					{ name: 'Task', value: 'Task', description: 'Launch agents for complex searches' },
+					{ name: 'Todo Write', value: 'TodoWrite', description: 'Manage todo lists' },
+					{ name: 'Web Fetch', value: 'WebFetch', description: 'Fetch web content' },
+					{ name: 'Web Search', value: 'WebSearch', description: 'Search the web' },
+					{ name: 'Write', value: 'Write', description: 'Write files' },
+				],
+				default: [],
+				description:
+					'Select which built-in tools Claude Code is explicitly blocked from using. Takes precedence over Allowed Tools.',
+			},
+			{
 				displayName: 'Additional Options',
 				name: 'additionalOptions',
 				type: 'collection',
 				placeholder: 'Add Option',
 				default: {},
 				options: [
+					{
+						displayName: 'Debug Mode',
+						name: 'debug',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to enable debug logging',
+					},
+					{
+						displayName: 'Fallback Model',
+						name: 'fallbackModel',
+						type: 'options',
+						options: [
+							{
+								name: 'None',
+								value: '',
+								description: 'No fallback model',
+							},
+							{
+								name: 'Sonnet',
+								value: 'sonnet',
+								description: 'Fallback to Sonnet when primary model is overloaded',
+							},
+							{
+								name: 'Opus',
+								value: 'opus',
+								description: 'Fallback to Opus when primary model is overloaded',
+							},
+						],
+						default: '',
+						description: 'Automatically switch to fallback model when primary model is overloaded',
+					},
+					{
+						displayName: 'Max Thinking Tokens',
+						name: 'maxThinkingTokens',
+						type: 'number',
+						default: 0,
+						description: 'Maximum number of thinking tokens (0 for unlimited)',
+						hint: 'Controls how many tokens Claude can use for internal reasoning',
+					},
+					{
+						displayName: 'Permission Mode',
+						name: 'permissionMode',
+						type: 'options',
+						options: [
+							{
+								name: 'Default',
+								value: 'default',
+								description: 'Standard permission prompts',
+							},
+							{
+								name: 'Accept Edits',
+								value: 'acceptEdits',
+								description: 'Automatically accept file edits',
+							},
+							{
+								name: 'Bypass Permissions',
+								value: 'bypassPermissions',
+								description: 'Skip all permission checks',
+							},
+							{
+								name: 'Plan',
+								value: 'plan',
+								description: 'Planning mode - Claude will plan before executing',
+							},
+						],
+						default: 'bypassPermissions',
+						description: 'How to handle permission requests for tool usage',
+					},
 					{
 						displayName: 'System Prompt',
 						name: 'systemPrompt',
@@ -168,20 +262,6 @@ export class ClaudeCode implements INodeType {
 						description: 'Additional context or instructions for Claude Code',
 						placeholder:
 							'You are helping with a Python project. Focus on clean, readable code with proper error handling.',
-					},
-					{
-						displayName: 'Require Permissions',
-						name: 'requirePermissions',
-						type: 'boolean',
-						default: false,
-						description: 'Whether to require permission for tool use',
-					},
-					{
-						displayName: 'Debug Mode',
-						name: 'debug',
-						type: 'boolean',
-						default: false,
-						description: 'Whether to enable debug logging',
 					},
 				],
 			},
@@ -203,10 +283,13 @@ export class ClaudeCode implements INodeType {
 				const projectPath = this.getNodeParameter('projectPath', itemIndex) as string;
 				const outputFormat = this.getNodeParameter('outputFormat', itemIndex) as string;
 				const allowedTools = this.getNodeParameter('allowedTools', itemIndex, []) as string[];
+				const disallowedTools = this.getNodeParameter('disallowedTools', itemIndex, []) as string[];
 				const additionalOptions = this.getNodeParameter('additionalOptions', itemIndex) as {
 					systemPrompt?: string;
-					requirePermissions?: boolean;
+					permissionMode?: string;
 					debug?: boolean;
+					fallbackModel?: string;
+					maxThinkingTokens?: number;
 				};
 
 				// Create abort controller for timeout
@@ -229,6 +312,10 @@ export class ClaudeCode implements INodeType {
 					console.log(`[ClaudeCode] Max turns: ${maxTurns}`);
 					console.log(`[ClaudeCode] Timeout: ${timeout}s`);
 					console.log(`[ClaudeCode] Allowed built-in tools: ${allowedTools.join(', ')}`);
+					console.log(`[ClaudeCode] Disallowed built-in tools: ${disallowedTools.join(', ')}`);
+					if (additionalOptions.fallbackModel) {
+						console.log(`[ClaudeCode] Fallback model: ${additionalOptions.fallbackModel}`);
+					}
 				}
 
 				// Build query options
@@ -237,11 +324,14 @@ export class ClaudeCode implements INodeType {
 					abortController: AbortController;
 					options: {
 						maxTurns: number;
-						permissionMode: 'default' | 'bypassPermissions';
+						permissionMode: 'default' | 'acceptEdits' | 'bypassPermissions' | 'plan';
 						model: string;
 						systemPrompt?: string;
 						mcpServers?: Record<string, any>;
 						allowedTools?: string[];
+						disallowedTools?: string[];
+						fallbackModel?: string;
+						maxThinkingTokens?: number;
 						continue?: boolean;
 						cwd?: string;
 					};
@@ -252,7 +342,7 @@ export class ClaudeCode implements INodeType {
 					abortController,
 					options: {
 						maxTurns,
-						permissionMode: additionalOptions.requirePermissions ? 'default' : 'bypassPermissions',
+						permissionMode: (additionalOptions.permissionMode || 'bypassPermissions') as any,
 						model,
 					},
 				};
@@ -276,6 +366,24 @@ export class ClaudeCode implements INodeType {
 					if (additionalOptions.debug) {
 						console.log(`[ClaudeCode] Allowed tools: ${allowedTools.join(', ')}`);
 					}
+				}
+
+				// Set disallowed tools if any are specified
+				if (disallowedTools.length > 0) {
+					queryOptions.options.disallowedTools = disallowedTools;
+					if (additionalOptions.debug) {
+						console.log(`[ClaudeCode] Disallowed tools: ${disallowedTools.join(', ')}`);
+					}
+				}
+
+				// Add fallback model if specified
+				if (additionalOptions.fallbackModel) {
+					queryOptions.options.fallbackModel = additionalOptions.fallbackModel;
+				}
+
+				// Add max thinking tokens if specified
+				if (additionalOptions.maxThinkingTokens && additionalOptions.maxThinkingTokens > 0) {
+					queryOptions.options.maxThinkingTokens = additionalOptions.maxThinkingTokens;
 				}
 
 				// Add continue flag if needed
