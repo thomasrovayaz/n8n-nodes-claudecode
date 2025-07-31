@@ -35,7 +35,8 @@
     "format": "prettier nodes --write",
     "lint": "eslint nodes package.json",
     "lintfix": "eslint nodes package.json --fix",
-    "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes package.json"
+    "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes package.json",
+    "commit": "cz"
   },
   "files": [
     "dist"
@@ -50,15 +51,29 @@
     "@anthropic-ai/claude-code": "latest"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.1",
+    "@semantic-release/npm": "^12.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.1",
     "@types/node": "^22.13.10",
     "@typescript-eslint/parser": "~8.32.0",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.57.0",
     "eslint-plugin-n8n-nodes-base": "^1.16.3",
     "gulp": "^5.0.0",
     "prettier": "^3.5.3",
+    "semantic-release": "^24.2.0",
     "typescript": "^5.8.2"
   },
   "peerDependencies": {
     "n8n-workflow": "*"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

@@ -293,6 +293,31 @@ We're constantly improving! Upcoming features:
 - Enhanced debugging tools
 - More MCP server integrations
 
+## 🔄 Development & Contributing
+
+### Commit Conventions
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) and automated semantic versioning:
+
+- `feat:` New features (minor version bump)
+- `fix:` Bug fixes (patch version bump)
+- `docs:` Documentation changes
+- `chore:` Maintenance tasks
+- `test:` Adding or updating tests
+
+Use `npm run commit` for an interactive commit message builder.
+
+### Release Process
+
+Releases are **fully automated** using semantic-release:
+1. Push commits to `main` branch
+2. CI analyzes commit messages
+3. Version is automatically bumped based on commit types
+4. Package is published to npm
+5. GitHub release is created with changelog
+
+No manual version management required!
+
 ## 📄 License
 
 MIT - Build amazing things!
