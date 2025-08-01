@@ -30,7 +30,8 @@
   },
   "main": "index.js",
   "scripts": {
-    "build": "npx rimraf dist && tsc && gulp build:icons && gulp build:schemas",
+    "build": "npm run format:check && npx rimraf dist && tsc && gulp build:icons && gulp build:schemas",
+    "format:check": "prettier nodes --check",
     "dev": "tsc --watch",
     "format": "prettier nodes --write",
     "lint": "eslint nodes package.json",

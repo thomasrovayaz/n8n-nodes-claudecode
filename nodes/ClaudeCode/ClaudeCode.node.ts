@@ -314,7 +314,7 @@ export class ClaudeCode implements INodeType {
 						timeout: `${timeout}s`,
 						allowedTools,
 						disallowedTools,
-						fallbackModel: additionalOptions.fallbackModel || 'none'
+						fallbackModel: additionalOptions.fallbackModel || 'none',
 					});
 				}
 
@@ -408,7 +408,9 @@ export class ClaudeCode implements INodeType {
 							const content = message.message.content[0];
 							if (additionalOptions.debug) {
 								if (content.type === 'text') {
-									this.logger.debug('Assistant response', { text: content.text.substring(0, 100) + '...' });
+									this.logger.debug('Assistant response', {
+										text: content.text.substring(0, 100) + '...',
+									});
 								} else if (content.type === 'tool_use') {
 									this.logger.debug('Tool use', { toolName: content.name });
 								}
@@ -422,7 +424,7 @@ export class ClaudeCode implements INodeType {
 					if (additionalOptions.debug) {
 						this.logger.debug('Execution completed', {
 							durationMs: duration,
-							messageCount: messages.length
+							messageCount: messages.length,
 						});
 					}
 
