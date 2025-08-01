@@ -306,16 +306,16 @@ export class ClaudeCode implements INodeType {
 
 				// Log start
 				if (additionalOptions.debug) {
-					console.log(`[ClaudeCode] Starting execution for item ${itemIndex}`);
-					console.log(`[ClaudeCode] Prompt: ${prompt.substring(0, 100)}...`);
-					console.log(`[ClaudeCode] Model: ${model}`);
-					console.log(`[ClaudeCode] Max turns: ${maxTurns}`);
-					console.log(`[ClaudeCode] Timeout: ${timeout}s`);
-					console.log(`[ClaudeCode] Allowed built-in tools: ${allowedTools.join(', ')}`);
-					console.log(`[ClaudeCode] Disallowed built-in tools: ${disallowedTools.join(', ')}`);
-					if (additionalOptions.fallbackModel) {
-						console.log(`[ClaudeCode] Fallback model: ${additionalOptions.fallbackModel}`);
-					}
+					this.logger.debug('Starting Claude Code execution', {
+						itemIndex,
+						prompt: prompt.substring(0, 100) + '...',
+						model,
+						maxTurns,
+						timeout: `${timeout}s`,
+						allowedTools,
+						disallowedTools,
+						fallbackModel: additionalOptions.fallbackModel || 'none'
+					});
 				}
 
 				// Build query options
@@ -356,7 +356,7 @@ export class ClaudeCode implements INodeType {
 				if (projectPath && projectPath.trim() !== '') {
 					queryOptions.options.cwd = projectPath.trim();
 					if (additionalOptions.debug) {
-						console.log(`[ClaudeCode] Working directory set to: ${queryOptions.options.cwd}`);
+						this.logger.debug('Working directory set', { cwd: queryOptions.options.cwd });
 					}
 				}
 
@@ -364,7 +364,7 @@ export class ClaudeCode implements INodeType {
 				if (allowedTools.length > 0) {
 					queryOptions.options.allowedTools = allowedTools;
 					if (additionalOptions.debug) {
-						console.log(`[ClaudeCode] Allowed tools: ${allowedTools.join(', ')}`);
+						this.logger.debug('Allowed tools configured', { allowedTools });
 					}
 				}
 
@@ -372,7 +372,7 @@ export class ClaudeCode implements INodeType {
 				if (disallowedTools.length > 0) {
 					queryOptions.options.disallowedTools = disallowedTools;
 					if (additionalOptions.debug) {
-						console.log(`[ClaudeCode] Disallowed tools: ${disallowedTools.join(', ')}`);
+						this.logger.debug('Disallowed tools configured', { disallowedTools });
 					}
 				}
 
@@ -400,16 +400,18 @@ export class ClaudeCode implements INodeType {
 						messages.push(message);
 
 						if (additionalOptions.debug) {
-							console.log(`[ClaudeCode] Received message type: ${message.type}`);
+							this.logger.debug('Received message', { messageType: message.type });
 						}
 
 						// Track progress
 						if (message.type === 'assistant' && message.message?.content) {
 							const content = message.message.content[0];
-							if (additionalOptions.debug && content.type === 'text') {
-								console.log(`[ClaudeCode] Assistant: ${content.text.substring(0, 100)}...`);
-							} else if (additionalOptions.debug && content.type === 'tool_use') {
-								console.log(`[ClaudeCode] Tool use: ${content.name}`);
+							if (additionalOptions.debug) {
+								if (content.type === 'text') {
+									this.logger.debug('Assistant response', { text: content.text.substring(0, 100) + '...' });
+								} else if (content.type === 'tool_use') {
+									this.logger.debug('Tool use', { toolName: content.name });
+								}
 							}
 						}
 					}
@@ -418,9 +420,10 @@ export class ClaudeCode implements INodeType {
 
 					const duration = Date.now() - startTime;
 					if (additionalOptions.debug) {
-						console.log(
-							`[ClaudeCode] Execution completed in ${duration}ms with ${messages.length} messages`,
-						);
+						this.logger.debug('Execution completed', {
+							durationMs: duration,
+							messageCount: messages.length
+						});
 					}
 
 					// Format output based on selected format
