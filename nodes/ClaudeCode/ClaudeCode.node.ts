@@ -400,7 +400,47 @@ export class ClaudeCode implements INodeType {
 						messages.push(message);
 
 						if (additionalOptions.debug) {
-							this.logger.debug('Received message', { messageType: message.type });
+							// Log detailed message content based on type
+							if (message.type === 'system' && (message as any).subtype === 'init') {
+								this.logger.debug('System init message', {
+									type: message.type,
+									subtype: (message as any).subtype,
+									model: (message as any).model,
+									toolCount: (message as any).tools?.length || 0,
+								});
+							} else if (message.type === 'assistant') {
+								const content = (message as any).message?.content;
+								this.logger.debug('Assistant message', {
+									type: message.type,
+									contentTypes: content?.map((c: any) => c.type) || [],
+									textLength: content?.find((c: any) => c.type === 'text')?.text?.length || 0,
+									hasToolUse: content?.some((c: any) => c.type === 'tool_use') || false,
+								});
+							} else if (message.type === 'user') {
+								this.logger.debug('User message', {
+									type: message.type,
+									hasToolResult: !!(message as any).message?.content?.some(
+										(c: any) => c.type === 'tool_result',
+									),
+								});
+							} else if (message.type === 'result') {
+								const resultMsg = message as any;
+								this.logger.debug('Result message', {
+									type: message.type,
+									subtype: resultMsg.subtype,
+									hasResult: !!resultMsg.result,
+									hasError: !!resultMsg.error,
+									resultLength: resultMsg.result ? String(resultMsg.result).length : 0,
+									error: resultMsg.error || 'none',
+									duration_ms: resultMsg.duration_ms,
+									total_cost: resultMsg.total_cost_usd,
+								});
+							} else {
+								this.logger.debug('Other message', {
+									type: message.type,
+									message: JSON.stringify(message).substring(0, 200),
+								});
+							}
 						}
 
 						// Track progress
@@ -426,12 +466,26 @@ export class ClaudeCode implements INodeType {
 							durationMs: duration,
 							messageCount: messages.length,
 						});
+
+						// Log final messages array summary
+						const messageTypes = messages.map((m) => ({
+							type: m.type,
+							subtype: (m as any).subtype,
+						}));
+						this.logger.debug('All messages in order', { messageTypes });
 					}
 
 					// Format output based on selected format
 					if (outputFormat === 'text') {
 						// Find the result message
 						const resultMessage = messages.find((m) => m.type === 'result') as any;
+
+						if (additionalOptions.debug) {
+							this.logger.debug('Processing text output format', {
+								foundResultMessage: !!resultMessage,
+								messageCount: messages.length,
+							});
+						}
 
 						// Extract the final assistant message if no result message
 						let finalText = '';
