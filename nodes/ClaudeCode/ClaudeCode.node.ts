@@ -435,8 +435,25 @@ export class ClaudeCode implements INodeType {
 
 						// Extract the final assistant message if no result message
 						let finalText = '';
+						let errorText = '';
+
 						if (resultMessage) {
-							finalText = resultMessage.result || resultMessage.error || '';
+							if (resultMessage.result) {
+								finalText = resultMessage.result;
+							} else if (resultMessage.error) {
+								errorText = resultMessage.error;
+								finalText = `Error: ${resultMessage.error}`;
+							}
+
+							// Debug log the result message
+							if (additionalOptions.debug) {
+								this.logger.debug('Result message details', {
+									type: resultMessage.type,
+									subtype: resultMessage.subtype,
+									hasResult: !!resultMessage.result,
+									hasError: !!resultMessage.error,
+								});
+							}
 						} else {
 							// Find the last assistant message with text content
 							const assistantMessages = messages.filter(
@@ -449,11 +466,15 @@ export class ClaudeCode implements INodeType {
 								);
 								finalText = textContent?.text || '';
 							}
+
+							if (!finalText) {
+								finalText = 'No response generated - check debug logs for details';
+							}
 						}
 
 						// Ensure all values are JSON-safe
 						const outputData = {
-							result: String(finalText || ''),
+							result: String(finalText || 'No response generated'),
 							success: Boolean(resultMessage?.subtype === 'success'),
 							duration_ms: Number(resultMessage?.duration_ms || 0),
 							total_cost_usd: Number(resultMessage?.total_cost_usd || 0),
@@ -462,6 +483,23 @@ export class ClaudeCode implements INodeType {
 						// Debug logging
 						if (additionalOptions.debug) {
 							this.logger.debug('Text output format data', { outputData });
+
+							// Log all message types for debugging
+							const messageSummary = messages.reduce(
+								(acc, msg) => {
+									acc[msg.type] = (acc[msg.type] || 0) + 1;
+									return acc;
+								},
+								{} as Record<string, number>,
+							);
+
+							this.logger.debug('Message summary', {
+								messageSummary,
+								totalMessages: messages.length,
+								hasResultMessage: !!resultMessage,
+								resultError: errorText || 'none',
+							});
+
 							try {
 								JSON.stringify(outputData);
 							} catch (e) {
