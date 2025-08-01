@@ -452,6 +452,8 @@ export class ClaudeCode implements INodeType {
 									subtype: resultMessage.subtype,
 									hasResult: !!resultMessage.result,
 									hasError: !!resultMessage.error,
+									resultLength: resultMessage.result ? String(resultMessage.result).length : 0,
+									errorMessage: resultMessage.error || 'none',
 								});
 							}
 						} else {
@@ -475,14 +477,25 @@ export class ClaudeCode implements INodeType {
 						// Ensure all values are JSON-safe
 						const outputData = {
 							result: String(finalText || 'No response generated'),
-							success: Boolean(resultMessage?.subtype === 'success'),
+							success: resultMessage?.subtype === 'success' ? true : false,
 							duration_ms: Number(resultMessage?.duration_ms || 0),
 							total_cost_usd: Number(resultMessage?.total_cost_usd || 0),
 						};
 
 						// Debug logging
 						if (additionalOptions.debug) {
-							this.logger.debug('Text output format data', { outputData });
+							this.logger.debug('Text output format data', {
+								outputData,
+								resultPreview:
+									outputData.result.substring(0, 200) +
+									(outputData.result.length > 200 ? '...' : ''),
+								outputDataTypes: {
+									result: typeof outputData.result,
+									success: typeof outputData.success,
+									duration_ms: typeof outputData.duration_ms,
+									total_cost_usd: typeof outputData.total_cost_usd,
+								},
+							});
 
 							// Log all message types for debugging
 							const messageSummary = messages.reduce(
@@ -559,7 +572,23 @@ export class ClaudeCode implements INodeType {
 					}
 				} catch (queryError) {
 					clearTimeout(timeoutId);
-					throw queryError;
+
+					// If we're in text output mode and error occurs during query, return error data
+					if (outputFormat === 'text') {
+						const errorMessage =
+							queryError instanceof Error ? queryError.message : String(queryError);
+						returnData.push({
+							json: {
+								result: `Error during execution: ${errorMessage}`,
+								success: false,
+								duration_ms: Date.now() - startTime,
+								total_cost_usd: 0,
+							},
+							pairedItem: { item: itemIndex },
+						});
+					} else {
+						throw queryError;
+					}
 				}
 			} catch (error) {
 				const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
