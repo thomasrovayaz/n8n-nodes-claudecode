@@ -80,8 +80,9 @@ export class ClaudeCode implements INodeType {
 				displayName: 'Max Turns',
 				name: 'maxTurns',
 				type: 'number',
-				default: 10,
-				description: 'Maximum number of conversation turns (back-and-forth exchanges) allowed',
+				default: 25,
+				description:
+					'Maximum number of conversation turns (back-and-forth exchanges) allowed. Complex tasks may require more turns.',
 			},
 			{
 				displayName: 'Timeout',
@@ -497,6 +498,27 @@ export class ClaudeCode implements INodeType {
 							} else if (resultMessage.error) {
 								errorText = resultMessage.error;
 								finalText = `Error: ${resultMessage.error}`;
+							} else if (resultMessage.subtype === 'error_max_turns') {
+								errorText = 'Maximum turns reached';
+								// Try to get the last assistant message before max turns
+								const assistantMessages = messages.filter(
+									(m) => m.type === 'assistant' && m.message?.content,
+								);
+								if (assistantMessages.length > 0) {
+									const lastMessage = assistantMessages[assistantMessages.length - 1] as any;
+									const textContent = lastMessage.message?.content?.find(
+										(c: any) => c.type === 'text',
+									);
+									if (textContent?.text) {
+										finalText = `[PARTIAL - Max turns reached]\n\n${textContent.text}\n\n[Note: Task incomplete. Increase maxTurns parameter to complete.]`;
+									} else {
+										finalText =
+											'Error: Maximum conversation turns reached. Consider increasing maxTurns parameter.';
+									}
+								} else {
+									finalText =
+										'Error: Maximum conversation turns reached. Consider increasing maxTurns parameter.';
+								}
 							}
 
 							// Debug log the result message
