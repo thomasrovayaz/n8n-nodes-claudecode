@@ -1,3 +1,17 @@
+## [0.3.1](https://github.com/johnlindquist/n8n-nodes-claudecode/compare/v0.3.0...v0.3.1) (2025-08-01)
+
+### ⚠ BREAKING CHANGES
+
+* Debug logs now require N8N_LOG_LEVEL=debug to appear in console
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+### Bug Fixes
+
+* replace console.log with n8n logger and add JSON schemas ([7307e34](https://github.com/johnlindquist/n8n-nodes-claudecode/commit/7307e3415d99dc3cfc8781281497ab29b0958129))
+
 ## [0.3.0](https://github.com/johnlindquist/n8n-nodes-claudecode/compare/v0.2.2...v0.3.0) (2025-07-31)
 
 ### Features
