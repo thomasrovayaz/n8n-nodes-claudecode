@@ -436,6 +436,15 @@ export class ClaudeCode implements INodeType {
 									duration_ms: resultMsg.duration_ms,
 									total_cost: resultMsg.total_cost_usd,
 								});
+
+								// Log more details for error_during_execution
+								if (resultMsg.subtype === 'error_during_execution') {
+									this.logger.error('Claude Code execution error', {
+										subtype: resultMsg.subtype,
+										error: resultMsg.error,
+										details: JSON.stringify(resultMsg).substring(0, 500),
+									});
+								}
 							} else {
 								this.logger.debug('Other message', {
 									type: message.type,
@@ -518,6 +527,25 @@ export class ClaudeCode implements INodeType {
 								} else {
 									finalText =
 										'Error: Maximum conversation turns reached. Consider increasing maxTurns parameter.';
+								}
+							} else if (resultMessage.subtype === 'error_during_execution') {
+								errorText = 'Error during execution';
+								// Try to get the last assistant message before the error
+								const assistantMessages = messages.filter(
+									(m) => m.type === 'assistant' && m.message?.content,
+								);
+								if (assistantMessages.length > 0) {
+									const lastMessage = assistantMessages[assistantMessages.length - 1] as any;
+									const textContent = lastMessage.message?.content?.find(
+										(c: any) => c.type === 'text',
+									);
+									if (textContent?.text) {
+										finalText = `[ERROR - Execution failed]\n\n${textContent.text}\n\n[Note: An error occurred during execution. Check logs for details.]`;
+									} else {
+										finalText = 'Error: Execution failed. Check debug logs for details.';
+									}
+								} else {
+									finalText = 'Error: Execution failed. No output available.';
 								}
 							}
 
