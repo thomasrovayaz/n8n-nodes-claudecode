@@ -432,14 +432,46 @@ export class ClaudeCode implements INodeType {
 					if (outputFormat === 'text') {
 						// Find the result message
 						const resultMessage = messages.find((m) => m.type === 'result') as any;
+
+						// Extract the final assistant message if no result message
+						let finalText = '';
+						if (resultMessage) {
+							finalText = resultMessage.result || resultMessage.error || '';
+						} else {
+							// Find the last assistant message with text content
+							const assistantMessages = messages.filter(
+								(m) => m.type === 'assistant' && m.message?.content,
+							);
+							if (assistantMessages.length > 0) {
+								const lastMessage = assistantMessages[assistantMessages.length - 1] as any;
+								const textContent = lastMessage.message?.content?.find(
+									(c: any) => c.type === 'text',
+								);
+								finalText = textContent?.text || '';
+							}
+						}
+
+						// Ensure all values are JSON-safe
+						const outputData = {
+							result: String(finalText || ''),
+							success: Boolean(resultMessage?.subtype === 'success'),
+							duration_ms: Number(resultMessage?.duration_ms || 0),
+							total_cost_usd: Number(resultMessage?.total_cost_usd || 0),
+						};
+
+						// Debug logging
+						if (additionalOptions.debug) {
+							this.logger.debug('Text output format data', { outputData });
+							try {
+								JSON.stringify(outputData);
+							} catch (e) {
+								this.logger.error('Output data is not JSON-compatible', { error: e });
+							}
+						}
+
 						returnData.push({
-							json: {
-								result: resultMessage?.result || resultMessage?.error || '',
-								success: resultMessage?.subtype === 'success',
-								duration_ms: resultMessage?.duration_ms,
-								total_cost_usd: resultMessage?.total_cost_usd,
-							},
-							pairedItem: itemIndex,
+							json: outputData,
+							pairedItem: { item: itemIndex },
 						});
 					} else if (outputFormat === 'messages') {
 						// Return raw messages
@@ -448,7 +480,7 @@ export class ClaudeCode implements INodeType {
 								messages,
 								messageCount: messages.length,
 							},
-							pairedItem: itemIndex,
+							pairedItem: { item: itemIndex },
 						});
 					} else if (outputFormat === 'structured') {
 						// Parse into structured format
@@ -484,7 +516,7 @@ export class ClaudeCode implements INodeType {
 									: null,
 								success: resultMessage?.subtype === 'success',
 							},
-							pairedItem: itemIndex,
+							pairedItem: { item: itemIndex },
 						});
 					}
 				} catch (queryError) {
