@@ -1,3 +1,9 @@
+## [0.3.2](https://github.com/johnlindquist/n8n-nodes-claudecode/compare/v0.3.1...v0.3.2) (2025-08-01)
+
+### Bug Fixes
+
+* run prettier formatting and add format check to build process ([c54a923](https://github.com/johnlindquist/n8n-nodes-claudecode/commit/c54a9237565d2293d6b574046336e11558785548))
+
 ## [0.3.1](https://github.com/johnlindquist/n8n-nodes-claudecode/compare/v0.3.0...v0.3.1) (2025-08-01)
 
 ### ⚠ BREAKING CHANGES
