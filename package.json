@@ -1,5 +1,5 @@
 {
-  "name": "@thomasrovayaz/n8n-nodes-claudecode",
+  "name": "n8n-nodes-claudecode",
   "version": "0.0.0-development",
   "description": "n8n node for Claude Code SDK integration with MCP support",
   "keywords": [
