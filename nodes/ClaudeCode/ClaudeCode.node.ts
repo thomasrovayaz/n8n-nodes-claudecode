@@ -12,7 +12,7 @@ type SDKMessage = any;
 export class ClaudeCode implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Claude Code',
-		name: 'claudeCode',
+		name: '@thomas.rovayaz/n8n-nodes-claudecode',
 		icon: 'file:claudecode.svg',
 		group: ['transform'],
 		version: 1,
