@@ -5,7 +5,9 @@ import type {
 	INodeTypeDescription,
 } from 'n8n-workflow';
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
-import { query, type SDKMessage } from '@anthropic-ai/claude-code';
+
+// Type definitions for the SDK (loaded dynamically)
+type SDKMessage = any;
 
 export class ClaudeCode implements INodeType {
 	description: INodeTypeDescription = {
@@ -272,6 +274,9 @@ export class ClaudeCode implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
+
+		// Dynamically import the Claude Code SDK (ES module)
+		const { query } = await import('@anthropic-ai/claude-code');
 
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
 			let timeout = 300; // Default timeout

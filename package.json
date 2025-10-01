@@ -1,5 +1,5 @@
 {
-  "name": "@johnlindquist/n8n-nodes-claudecode",
+  "name": "@thomasrovayaz/n8n-nodes-claudecode",
   "version": "0.0.0-development",
   "description": "n8n node for Claude Code SDK integration with MCP support",
   "keywords": [
@@ -13,9 +13,9 @@
     "model-context-protocol"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/johnlindquist/n8n-nodes-claudecode#readme",
+  "homepage": "https://github.com/thomasrovayaz/n8n-nodes-claudecode#readme",
   "bugs": {
-    "url": "https://github.com/johnlindquist/n8n-nodes-claudecode/issues"
+    "url": "https://github.com/thomasrovayaz/n8n-nodes-claudecode/issues"
   },
   "author": {
     "name": "Adam Holt",
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/johnlindquist/n8n-nodes-claudecode.git"
+    "url": "https://github.com/thomasrovayaz/n8n-nodes-claudecode.git"
   },
   "engines": {
     "node": ">=20.15"
