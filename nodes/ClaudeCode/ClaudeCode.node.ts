@@ -276,7 +276,9 @@ export class ClaudeCode implements INodeType {
 		const returnData: INodeExecutionData[] = [];
 
 		// Dynamically import the Claude Code SDK (ES module)
-		const { query } = await import('@anthropic-ai/claude-code');
+		// Use Function constructor to prevent TypeScript from converting to require()
+		const importFn = new Function('specifier', 'return import(specifier)');
+		const { query } = await importFn('@anthropic-ai/claude-code');
 
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
 			let timeout = 300; // Default timeout
