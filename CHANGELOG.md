@@ -1,10 +1,10 @@
-## [0.3.2](https://github.com/johnlindquist/n8n-nodes-claudecode/compare/v0.3.1...v0.3.2) (2025-08-01)
+## [0.3.2](https://github.com/thomas.rovayaz/n8n-nodes-claudecode/compare/v0.3.1...v0.3.2) (2025-08-01)
 
 ### Bug Fixes
 
-* run prettier formatting and add format check to build process ([c54a923](https://github.com/johnlindquist/n8n-nodes-claudecode/commit/c54a9237565d2293d6b574046336e11558785548))
+* run prettier formatting and add format check to build process ([c54a923](https://github.com/thomas.rovayaz/n8n-nodes-claudecode/commit/c54a9237565d2293d6b574046336e11558785548))
 
-## [0.3.1](https://github.com/johnlindquist/n8n-nodes-claudecode/compare/v0.3.0...v0.3.1) (2025-08-01)
+## [0.3.1](https://github.com/thomas.rovayaz/n8n-nodes-claudecode/compare/v0.3.0...v0.3.1) (2025-08-01)
 
 ### ⚠ BREAKING CHANGES
 
@@ -16,16 +16,16 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ### Bug Fixes
 
-* replace console.log with n8n logger and add JSON schemas ([7307e34](https://github.com/johnlindquist/n8n-nodes-claudecode/commit/7307e3415d99dc3cfc8781281497ab29b0958129))
+* replace console.log with n8n logger and add JSON schemas ([7307e34](https://github.com/thomas.rovayaz/n8n-nodes-claudecode/commit/7307e3415d99dc3cfc8781281497ab29b0958129))
 
-## [0.3.0](https://github.com/johnlindquist/n8n-nodes-claudecode/compare/v0.2.2...v0.3.0) (2025-07-31)
+## [0.3.0](https://github.com/thomas.rovayaz/n8n-nodes-claudecode/compare/v0.2.2...v0.3.0) (2025-07-31)
 
 ### Features
 
-* add advanced SDK options to Claude Code node ([e80d5f5](https://github.com/johnlindquist/n8n-nodes-claudecode/commit/e80d5f5866200cc94a5d3d9a851bf3b3ea8e5564))
+* add advanced SDK options to Claude Code node ([e80d5f5](https://github.com/thomas.rovayaz/n8n-nodes-claudecode/commit/e80d5f5866200cc94a5d3d9a851bf3b3ea8e5564))
 
-## [0.2.2](https://github.com/johnlindquist/n8n-nodes-claudecode/compare/v0.2.1...v0.2.2) (2025-07-31)
+## [0.2.2](https://github.com/thomas.rovayaz/n8n-nodes-claudecode/compare/v0.2.1...v0.2.2) (2025-07-31)
 
 ### Bug Fixes
 
-* add missing conventional-changelog-conventionalcommits dependency ([ff11b26](https://github.com/johnlindquist/n8n-nodes-claudecode/commit/ff11b2629d1576168a1d27c8cc31915a90ba8eda))
+* add missing conventional-changelog-conventionalcommits dependency ([ff11b26](https://github.com/thomas.rovayaz/n8n-nodes-claudecode/commit/ff11b2629d1576168a1d27c8cc31915a90ba8eda))
